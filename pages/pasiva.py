@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-import locale
-locale.setlocale(locale.LC_TIME, 'Spanish_Spain.1252')
+#import locale
+#locale.setlocale(locale.LC_TIME, 'Spanish_Spain.1252')
 
 from utils.graficos import histograma_tiempos, barras_tiempo_hora
 from utils.tablas import tabla_extremos, calcular_metricas_gestion
