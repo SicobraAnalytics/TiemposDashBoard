@@ -53,7 +53,15 @@ with st.sidebar:
         key="FechaAct",
         bind="query-params"
     )
-     
+    
+    selected_channels = st.multiselect(
+        "Canal",
+        options=sorted(df_act.CodigoCanal.cat.categories.to_list()),
+        default=[],
+        key="CanalAct",
+        bind="query-params"
+    )
+
     selected_products = st.multiselect(
         "Producto",
         options=sorted(df_act.Producto.cat.categories.to_list()),
@@ -64,25 +72,37 @@ with st.sidebar:
 
     selected_stages = st.multiselect(
         "Etapa de Cobranza",
-        options=['PRIMERA','SEGUNDA','TERCERA', 'CUARTA', 'SEXTA','SEPTIMA','OCTAVA', 'NO DEFINIDO'],
+        options=sorted(df_act.RangoMoraInicio.cat.categories.to_list()),
         default=[],
         key="EtapaAct",
         bind="query-params"
     )
 
+    selected_responses = st.multiselect(
+        "Respuesta",
+        options=sorted(df_act.NombreRespuesta.cat.categories.to_list()),
+        default=[],
+        key="RespuestaAct",
+        bind="query-params"
+    )
+
 # --- FILTER LOGIC ---
 # Categorical Filtering
-def apply_categorical_filters(_base_df, dates, products, stages, contact_type):
+def apply_categorical_filters(_base_df, dates, products, channels, stages, contact_type, responses):
     filtered = _base_df.copy()
     
     if dates:
         filtered = filtered[filtered["Fecha"].isin(dates)]
     if products:
         filtered = filtered[filtered["Producto"].isin(products)]
+    if channels:
+        filtered = filtered[filtered["CodigoCanal"].isin(channels)]
     if stages:
-        filtered = filtered[filtered["Etapa"].isin(stages)]
+        filtered = filtered[filtered["RangoMoraInicio"].isin(stages)]
     if contact_type:
         filtered = filtered[filtered["TipoContacto"].isin(contact_type)]
+    if responses:
+        filtered = filtered[filtered["NombreRespuesta"].isin(responses)]
         
     return filtered
 
@@ -90,8 +110,10 @@ current_df = apply_categorical_filters(
     df_act, 
     selected_dates, 
     selected_products, 
+    selected_channels,
     selected_stages, 
-    selected_contact_type
+    selected_contact_type,
+    selected_responses
 )
 
 # Tarjetas
@@ -129,16 +151,16 @@ col1, col2 = st.columns([1.2, .8])
 
 with col1:
     fig_activa = histograma_tiempos(current_df["duracion"])
-    st.plotly_chart(fig_activa, use_container_width=True)
+    st.plotly_chart(fig_activa, width='stretch')
 
 with col2:
-    cols = ['id', 'UserNameGestion', 'FechaGestion', 'TipoContacto', 'duracion', 'NumeroOperacion', 'Producto', 'Etapa']
+    cols = ['id', 'UserNameGestion', 'FechaGestion', 'TipoContacto', 'duracion', 'NumeroOperacion', 'Producto', 'RangoMoraInicio']
     extremos = tabla_extremos(current_df, cols)
     
     st.write("### 100 Casos mas Extremos") 
     st.dataframe(
         extremos,
-        use_container_width=True,
+        width='stretch',
         height=350,
         hide_index=True
     )
@@ -162,4 +184,4 @@ else:
     raise ValueError("Funcion no implementada")
 
 fig_barras = barras_tiempo_hora(current_df, agg_func)
-st.plotly_chart(fig_barras, use_container_width=True)
+st.plotly_chart(fig_barras, width='stretch')

@@ -160,7 +160,7 @@ col1, col2 = st.columns([1.2, .8])
 
 with col1:
     fig_activa = histograma_tiempos(current_df["duracion"])
-    st.plotly_chart(fig_activa, use_container_width=True)
+    st.plotly_chart(fig_activa, width='stretch')
 
 with col2:
     cols = ['id', 'UserNameGestion', 'FechaGestion','TipoContacto','duracion', 'NumeroOperacion','TipoCartera', 'Producto', 'RangoMoraAnio']
@@ -169,7 +169,7 @@ with col2:
     st.write("### 100 Casos mas Extremos") 
     st.dataframe(
         extremos,
-        use_container_width=True,
+        width='stretch',
         height=350,
         hide_index=True
     )
@@ -193,4 +193,4 @@ else:
     raise ValueError("Funcion no implementada")
 
 fig_barras = barras_tiempo_hora(current_df, agg_func)
-st.plotly_chart(fig_barras, use_container_width=True)
+st.plotly_chart(fig_barras, width='stretch')
